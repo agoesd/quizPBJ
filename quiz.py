@@ -27,7 +27,7 @@ def randomize_questions(questions):
 def calculate_score(questions, user_answers):
     score = 0
     for i in range(len(questions)):
-        if user_answers[i] == questions[i]["answer"]:
+        if user_answers[i] == questions[i]["options"][int(questions[i]["answer"][-1]) - 1]:
             score += 4
     return score
 
