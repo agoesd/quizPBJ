@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import random
+from sessionstate import SessionState
 
 # Load questions from a CSV file
 def load_questions(url):
@@ -27,9 +28,14 @@ def calculate_score(questions, user_answers):
 st.title("Quiz Time!")
 
 # Get the number of questions to load from the user
-num_questions = st.number_input("Number of questions:", min_value=1, value=5, key="num_questions")
+session_state = SessionState.get(num_questions=5, quiz_started=False)
+num_questions = st.number_input("Number of questions:", min_value=1, value=session_state.num_questions, key="num_questions")
 
 if st.button("Start Quiz"):
+    session_state.num_questions = num_questions
+    session_state.quiz_started = True
+
+if session_state.quiz_started:
     # Load the questions from the CSV file
     questions = load_questions("quiz_questions.csv")
 
@@ -41,7 +47,7 @@ if st.button("Start Quiz"):
     user_answers = []
 
     # Display each question and collect the user's answer
-    for i in range(num_questions):
+    for i in range(session_state.num_questions):
         st.header(f"Question #{i+1}")
         st.write(questions[i]["question"])
         selected_option = st.selectbox(f"Select an option for Question #{i+1}:", questions[i]["options"])
@@ -51,7 +57,7 @@ if st.button("Start Quiz"):
     submitted = st.button("Submit")
     if submitted:
         # Calculate the total score
-        score = calculate_score(questions[:num_questions], user_answers)
+        score = calculate_score(questions[:session_state.num_questions], user_answers)
         
         # Display the final score
         st.success(f"Total Score: {score}")
