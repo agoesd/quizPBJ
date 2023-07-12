@@ -1,20 +1,16 @@
 import streamlit as st
-import csv
-import requests
-import io
+import pandas as pd
 import random
 
 # Load questions from a CSV file
 def load_questions(url):
+    df = pd.read_csv(url, delimiter=";")
     questions = []
-    response = requests.get(url)
-    content = response.content.decode("utf-8")
-    reader = csv.reader(io.StringIO(content), delimiter=";")
-    for row in reader:
+    for _, row in df.iterrows():
         question = {
-            "question": row[0],
-            "options": row[1:5],
-            "answer": row[6]  # Update the index to 6
+            "question": row["question"],
+            "options": [row[f"option{i+1}"] for i in range(4)],
+            "answer": row["answer"]
         }
         questions.append(question)
     return questions
