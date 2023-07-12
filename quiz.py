@@ -19,7 +19,7 @@ def load_questions(url):
 def calculate_score(questions, user_answers):
     score = 0
     for i in range(len(questions)):
-        if user_answers[i] == questions[i]["answer"]:
+        if user_answers[i] == questions[i]["answer"] or user_answers[i] == questions[i]["options"][int(questions[i]["answer"][-1]) - 1]:
             score += 4
     return score
 
@@ -37,7 +37,7 @@ if st.button("Start Quiz"):
 
 if st.session_state.get("quiz_started"):
     # Load the questions from the CSV file
-    questions = load_questions("quiz_questions.csv")
+    questions = load_questions("https://raw.githubusercontent.com/agoesd/quizPBJ/main/quiz_questions.csv")
 
     # Initialize the score and user answers
     score = 0
