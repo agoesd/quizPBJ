@@ -1,19 +1,22 @@
 import streamlit as st
 import csv
+import requests
+import io
 import random
 
 # Load questions from a CSV file
-def load_questions(filename):
+def load_questions(url):
     questions = []
-    with open(filename, "r") as file:
-        reader = csv.reader(file, delimiter=";")
-        for row in reader:
-            question = {
-                "question": row[0],
-                "options": row[1:5],
-                "answer": row[5]
-            }
-            questions.append(question)
+    response = requests.get(url)
+    content = response.content.decode("utf-8")
+    reader = csv.reader(io.StringIO(content), delimiter=";")
+    for row in reader:
+        question = {
+            "question": row[0],
+            "options": row[1:5],
+            "answer": row[5]
+        }
+        questions.append(question)
     return questions
 
 # Calculate the total score
@@ -31,7 +34,7 @@ st.title("Quiz Time!")
 num_questions = st.number_input("Number of questions:", min_value=1, value=5)
 
 # Load the questions from the CSV file
-questions = load_questions("quiz_questions.csv")
+questions = load_questions("https://raw.githubusercontent.com/agoesd/quizPBJ/main/quiz_questions.csv")
 
 # Randomize the order of questions
 random.shuffle(questions)
