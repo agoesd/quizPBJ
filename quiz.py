@@ -30,7 +30,7 @@ st.title("Quiz Time!")
 num_questions = st.number_input("Number of questions:", min_value=1, value=5)
 
 # Load the questions from the CSV file
-questions = load_questions("https://raw.githubusercontent.com/agoesd/quizPBJ/main/quiz_questions.csv")
+questions = load_questions("quiz_questions.csv")
 
 # Randomize the order of questions
 random.shuffle(questions)
