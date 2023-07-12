@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import random
-from streamlit import caching
 
 # Load questions from a CSV file
 def load_questions(url):
@@ -32,11 +31,6 @@ def calculate_score(questions, user_answers):
             score += 4
     return score
 
-# Create a SessionState class
-class SessionState:
-    def __init__(self, **kwargs):
-        self.__dict__.update(kwargs)
-
 # Create a Streamlit app
 st.title("Quiz Time!")
 
@@ -53,30 +47,30 @@ num_questions = st.number_input("Number of questions:", min_value=1, max_value=m
 submitted_num_questions = st.button("Submit Number of Questions")
 
 if submitted_num_questions:
-    selected_questions = questions[:num_questions]
-    session_state = SessionState(selected_questions=selected_questions, quiz_started=True, question_index=0, user_answers=[None] * num_questions)
-    caching.clear_cache()
-else:
-    session_state = SessionState()
+    selected_questions = random.sample(questions, num_questions)
+    st.session_state["selected_questions"] = selected_questions
+    st.session_state["quiz_started"] = True
+    st.session_state["question_index"] = 0
+    st.session_state["user_answers"] = [None] * num_questions
 
-if session_state.quiz_started:
-    question = session_state.selected_questions[session_state.question_index]
-    st.header(f"Question #{session_state.question_index + 1}")
+if st.session_state.get("quiz_started"):
+    question = st.session_state["selected_questions"][st.session_state["question_index"]]
+    st.header(f"Question #{st.session_state['question_index'] + 1}")
     st.write(question["question"])
-    selected_option = st.selectbox(f"Select an option for Question #{session_state.question_index + 1}:", question["options"], key=f"options_{session_state.question_index}")
-    session_state.user_answers[session_state.question_index] = selected_option
+    selected_option = st.selectbox(f"Select an option for Question #{st.session_state['question_index'] + 1}:", question["options"], key=f"options_{st.session_state['question_index']}")
+    st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
 
-    session_state.question_index += 1
-    if session_state.question_index < num_questions:
-        question = session_state.selected_questions[session_state.question_index]
-        st.header(f"Question #{session_state.question_index + 1}")
+    st.session_state["question_index"] += 1
+    if st.session_state["question_index"] < num_questions:
+        question = st.session_state["selected_questions"][st.session_state["question_index"]]
+        st.header(f"Question #{st.session_state['question_index'] + 1}")
         st.write(question["question"])
-
-    if session_state.question_index == num_questions:
+    
+    if st.session_state["question_index"] == num_questions:
         submitted = st.button("Submit")
         if submitted:
             # Calculate the total score
-            score = calculate_score(session_state.selected_questions, session_state.user_answers)
-
+            score = calculate_score(st.session_state["selected_questions"], st.session_state["user_answers"])
+            
             # Display the final score
             st.success(f"Total Score: {score}")
