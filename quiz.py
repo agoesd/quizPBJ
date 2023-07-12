@@ -61,13 +61,10 @@ if st.session_state.get("quiz_started"):
     st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
 
     if st.session_state["question_index"] < num_questions - 1:
-        st.button("Next Question", key="next_question")
+        if st.button("Next Question", key="next_question"):
+            st.session_state["question_index"] += 1
     else:
         submitted = st.button("Submit")
-
-    if "next_question" in st.session_state:
-        st.session_state["question_index"] += 1
-        del st.session_state["next_question"]
 
 if "submitted" in locals() and submitted:
     # Calculate the total score
