@@ -8,13 +8,10 @@ def load_questions(url):
     questions = []
     for _, row in df.iterrows():
         options = [row[i] for i in range(1, 5)]
-        random.shuffle(options)
-        answer_index = int(row[5][-1]) - 1
         question = {
             "question": row[0],
             "options": options,
-            "answer_index": answer_index,
-            "answer": options[answer_index]
+            "answer": row[5]
         }
         questions.append(question)
     return questions
@@ -45,27 +42,31 @@ if submitted_num_questions:
     random_order = random.sample(range(max_num_questions), num_questions)
     st.session_state["random_order"] = random_order
     st.session_state["quiz_started"] = True
+    st.session_state["question_index"] = 0
+    st.session_state["user_answers"] = [None] * num_questions
+    st.session_state["options"] = random.choice(questions)["options"]
 
 if st.session_state.get("quiz_started"):
-    # Display each question and collect the user's answer
-    user_answers = st.session_state.get("user_answers", [])
-    for i, question_index in enumerate(st.session_state["random_order"]):
-        question = questions[question_index]
-        st.header(f"Question #{i+1}")
-        st.write(question["question"])
-        options = question["options"]
-        selected_option = st.selectbox(f"Select an option for Question #{i+1}:", options, key=f"question_{i}")
-        if len(user_answers) < num_questions:
-            user_answers.append(selected_option)
-        else:
-            user_answers[i] = selected_option
-    st.session_state["user_answers"] = user_answers
+    question_index = st.session_state["random_order"][st.session_state["question_index"]]
+    question = questions[question_index]
+    st.header(f"Question #{st.session_state['question_index'] + 1}")
+    st.write(question["question"])
+    selected_option = st.selectbox(f"Select an option for Question #{st.session_state['question_index'] + 1}:", st.session_state["options"])
+    st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
 
-    # Submit answers and calculate the total score
-    submitted = st.button("Submit")
-    if submitted:
-        # Calculate the total score
-        score = calculate_score([questions[idx] for idx in st.session_state["random_order"]], user_answers)
-        
-        # Display the final score
-        st.success(f"Total Score: {score}")
+    st.session_state["question_index"] += 1
+    if st.session_state["question_index"] < num_questions:
+        question_index = st.session_state["random_order"][st.session_state["question_index"]]
+        question = questions[question_index]
+        st.header(f"Question #{st.session_state['question_index'] + 1}")
+        st.write(question["question"])
+        st.session_state["options"] = question["options"]
+    
+    if st.session_state["question_index"] == num_questions:
+        submitted = st.button("Submit")
+        if submitted:
+            # Calculate the total score
+            score = calculate_score([questions[idx] for idx in st.session_state["random_order"]], st.session_state["user_answers"])
+            
+            # Display the final score
+            st.success(f"Total Score: {score}")
