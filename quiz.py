@@ -11,7 +11,7 @@ def load_questions(url):
         question = {
             "question": row[0],
             "options": options,
-            "answer": row[5]
+            "answer": row[6]  # Assuming the answer is in column 6
         }
         questions.append(question)
     return questions
@@ -51,7 +51,7 @@ if submitted_num_questions:
     st.session_state["selected_questions"] = selected_questions
     st.session_state["quiz_started"] = True
     st.session_state["question_index"] = 0
-    st.session_state["user_answers"] = {}
+    st.session_state["user_answers"] = [None] * num_questions
 
 if st.session_state.get("quiz_started"):
     question = st.session_state["selected_questions"][st.session_state["question_index"]]
@@ -71,7 +71,7 @@ if st.session_state.get("quiz_started"):
 
 if "submitted" in locals() and submitted:
     # Calculate the total score
-    score = calculate_score(st.session_state["selected_questions"], list(st.session_state["user_answers"].values()))
+    score = calculate_score(st.session_state["selected_questions"], st.session_state["user_answers"])
     
     # Display the final score
     st.success(f"Total Score: {score}")
