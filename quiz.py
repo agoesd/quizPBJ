@@ -2,16 +2,14 @@ import streamlit as st
 import pandas as pd
 import random
 
-# Load questions from a CSV file and randomize the options
+# Load questions from a CSV file
 def load_questions(url):
     df = pd.read_csv(url, delimiter=";")
     questions = []
     for _, row in df.iterrows():
-        options = [row[i] for i in range(1, 5)]
-        random.shuffle(options)
         question = {
             "question": row[0],
-            "options": options,
+            "options": [row[i] for i in range(1, 5)],
             "answer": row[5]
         }
         questions.append(question)
@@ -28,7 +26,7 @@ def calculate_score(questions, user_answers):
 # Create a Streamlit app
 st.title("Quiz Time!")
 
-# Load the questions from the CSV file and randomize the options
+# Load the questions from the CSV file
 questions = load_questions("quiz_questions.csv")
 
 # Maximum number of questions
@@ -40,18 +38,19 @@ num_questions = st.number_input("Number of questions:", min_value=1, max_value=m
 submitted_num_questions = st.button("Submit Number of Questions")
 
 if submitted_num_questions:
-    random_order = list(range(max_num_questions))
-    random.shuffle(random_order)
-    st.session_state["random_order"] = random_order[:num_questions]
+    random_order = random.sample(range(max_num_questions), num_questions)
+    st.session_state["random_order"] = random_order
     st.session_state["quiz_started"] = True
 
 if st.session_state.get("quiz_started"):
     # Display each question and collect the user's answer
     user_answers = st.session_state.get("user_answers", [])
     for i, question_index in enumerate(st.session_state["random_order"]):
+        question = questions[question_index]
         st.header(f"Question #{i+1}")
-        st.write(questions[question_index]["question"])
-        selected_option = st.selectbox(f"Select an option for Question #{i+1}:", questions[question_index]["options"], key=f"question_{i}")
+        st.write(question["question"])
+        options = question["options"]
+        selected_option = st.selectbox(f"Select an option for Question #{i+1}:", options, key=f"question_{i}")
         if len(user_answers) < num_questions:
             user_answers.append(selected_option)
         else:
