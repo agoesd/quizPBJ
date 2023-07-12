@@ -40,26 +40,29 @@ num_questions = st.number_input("Number of questions:", min_value=1, max_value=m
 submitted_num_questions = st.button("Submit Number of Questions")
 
 if submitted_num_questions:
-    random_order = list(range(num_questions))
+    random_order = list(range(max_num_questions))
     random.shuffle(random_order)
-    st.session_state["random_order"] = random_order
+    st.session_state["random_order"] = random_order[:num_questions]
     st.session_state["quiz_started"] = True
 
 if st.session_state.get("quiz_started"):
     # Display each question and collect the user's answer
-    user_answers = []
-    for i in range(num_questions):
-        question_index = st.session_state["random_order"][i]
+    user_answers = st.session_state.get("user_answers", [])
+    for i, question_index in enumerate(st.session_state["random_order"]):
         st.header(f"Question #{i+1}")
         st.write(questions[question_index]["question"])
-        selected_option = st.selectbox(f"Select an option for Question #{i+1}:", questions[question_index]["options"])
-        user_answers.append(selected_option)
+        selected_option = st.selectbox(f"Select an option for Question #{i+1}:", questions[question_index]["options"], key=f"question_{i}")
+        if len(user_answers) < num_questions:
+            user_answers.append(selected_option)
+        else:
+            user_answers[i] = selected_option
+    st.session_state["user_answers"] = user_answers
 
     # Submit answers and calculate the total score
     submitted = st.button("Submit")
     if submitted:
         # Calculate the total score
-        score = calculate_score([questions[idx] for idx in st.session_state["random_order"][:num_questions]], user_answers)
+        score = calculate_score([questions[idx] for idx in st.session_state["random_order"]], user_answers)
         
         # Display the final score
         st.success(f"Total Score: {score}")
