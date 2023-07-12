@@ -8,6 +8,7 @@ def load_questions(url):
     questions = []
     for _, row in df.iterrows():
         options = [row[i] for i in range(1, 5)]
+        random.shuffle(options)
         question = {
             "question": row[0],
             "options": options,
@@ -44,14 +45,13 @@ if submitted_num_questions:
     st.session_state["quiz_started"] = True
     st.session_state["question_index"] = 0
     st.session_state["user_answers"] = [None] * num_questions
-    st.session_state["options"] = random.choice(questions)["options"]
 
 if st.session_state.get("quiz_started"):
     question_index = st.session_state["random_order"][st.session_state["question_index"]]
     question = questions[question_index]
     st.header(f"Question #{st.session_state['question_index'] + 1}")
     st.write(question["question"])
-    selected_option = st.selectbox(f"Select an option for Question #{st.session_state['question_index'] + 1}:", st.session_state["options"])
+    selected_option = st.radio(f"Select an option for Question #{st.session_state['question_index'] + 1}:", question["options"], key=f"options_{st.session_state['question_index']}")
     st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
 
     st.session_state["question_index"] += 1
@@ -60,7 +60,6 @@ if st.session_state.get("quiz_started"):
         question = questions[question_index]
         st.header(f"Question #{st.session_state['question_index'] + 1}")
         st.write(question["question"])
-        st.session_state["options"] = question["options"]
     
     if st.session_state["question_index"] == num_questions:
         submitted = st.button("Submit")
