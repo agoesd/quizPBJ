@@ -26,12 +26,14 @@ def calculate_score(questions, user_answers):
 # Create a Streamlit app
 st.title("Quiz Time!")
 
-# Initialize the score and user answers
-score = 0
-user_answers = []
+# Load the questions from the CSV file
+questions = load_questions("quiz_questions.csv")
+
+# Maximum number of questions
+max_num_questions = len(questions)
 
 # Get the number of questions to load from the user
-num_questions = st.number_input("Number of questions:", min_value=1, value=5, key="num_questions")
+num_questions = st.number_input("Number of questions:", min_value=1, max_value=max_num_questions, value=5, key="num_questions")
 
 submitted_num_questions = st.button("Submit Number of Questions")
 
@@ -42,10 +44,8 @@ if submitted_num_questions:
     st.session_state["quiz_started"] = True
 
 if st.session_state.get("quiz_started"):
-    # Load the questions from the CSV file
-    questions = load_questions("quiz_questions.csv")
-
     # Display each question and collect the user's answer
+    user_answers = []
     for i in range(num_questions):
         question_index = st.session_state["random_order"][i]
         st.header(f"Question #{i+1}")
