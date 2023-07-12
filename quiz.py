@@ -11,7 +11,7 @@ def load_questions(url):
         question = {
             "question": row[0],
             "options": options,
-            "answer": row[6]  # Assuming the answer is in column 6
+            "answer": row[5]  # Assuming the answer is in column 6
         }
         questions.append(question)
     return questions
