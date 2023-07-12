@@ -4,13 +4,13 @@ import random
 
 # Load questions from a CSV file
 def load_questions(url):
-    df = pd.read_csv(url, delimiter=";", index_col=False)
+    df = pd.read_csv(url, delimiter=";")
     questions = []
     for _, row in df.iterrows():
         question = {
-            "question": row[0],
-            "options": [row[i] for i in range(1, 5)],
-            "answer": row[5]
+            "question": row["question"],
+            "options": [row[f"option{i+1}"] for i in range(4)],
+            "answer": row["answer"]
         }
         questions.append(question)
     return questions
