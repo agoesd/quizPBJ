@@ -15,6 +15,7 @@ def load_questions(url):
             "answer": row[5]
         }
         questions.append(question)
+    random.shuffle(questions)
     return questions
 
 # Calculate the total score
@@ -40,15 +41,15 @@ num_questions = st.number_input("Number of questions:", min_value=1, max_value=m
 submitted_num_questions = st.button("Submit Number of Questions")
 
 if submitted_num_questions:
-    random_order = random.sample(range(max_num_questions), num_questions)
-    st.session_state["random_order"] = random_order
+    selected_questions = questions[:num_questions]
+    st.session_state["selected_questions"] = selected_questions
     st.session_state["quiz_started"] = True
     st.session_state["question_index"] = 0
     st.session_state["user_answers"] = [None] * num_questions
+    st.session_state["options"] = selected_questions[0]["options"]
 
 if st.session_state.get("quiz_started"):
-    question_index = st.session_state["random_order"][st.session_state["question_index"]]
-    question = questions[question_index]
+    question = st.session_state["selected_questions"][st.session_state["question_index"]]
     st.header(f"Question #{st.session_state['question_index'] + 1}")
     st.write(question["question"])
     selected_option = st.radio(f"Select an option for Question #{st.session_state['question_index'] + 1}:", question["options"], key=f"options_{st.session_state['question_index']}")
@@ -56,8 +57,7 @@ if st.session_state.get("quiz_started"):
 
     st.session_state["question_index"] += 1
     if st.session_state["question_index"] < num_questions:
-        question_index = st.session_state["random_order"][st.session_state["question_index"]]
-        question = questions[question_index]
+        question = st.session_state["selected_questions"][st.session_state["question_index"]]
         st.header(f"Question #{st.session_state['question_index'] + 1}")
         st.write(question["question"])
     
@@ -65,7 +65,7 @@ if st.session_state.get("quiz_started"):
         submitted = st.button("Submit")
         if submitted:
             # Calculate the total score
-            score = calculate_score([questions[idx] for idx in st.session_state["random_order"]], st.session_state["user_answers"])
+            score = calculate_score(st.session_state["selected_questions"], st.session_state["user_answers"])
             
             # Display the final score
             st.success(f"Total Score: {score}")
