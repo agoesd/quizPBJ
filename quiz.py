@@ -14,7 +14,7 @@ def load_questions(url):
         question = {
             "question": row[0],
             "options": row[1:5],
-            "answer": row[5]
+            "answer": row[5]  # Update the index to 5
         }
         questions.append(question)
     return questions
