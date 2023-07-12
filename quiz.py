@@ -61,20 +61,17 @@ if st.session_state.get("quiz_started"):
     st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
 
     if st.session_state["question_index"] < num_questions - 1:
-        st.session_state["question_index"] += 1
-        st.session_state["show_next_question"] = st.button("Next Question")
-    
-    if st.session_state["show_next_question"]:
-        st.session_state["show_next_question"] = False
-        question = st.session_state["selected_questions"][st.session_state["question_index"]]
-        st.header(f"Question #{st.session_state['question_index'] + 1}")
-        st.write(question["question"])
+        st.button("Next Question", key="next_question")
+    else:
+        submitted = st.button("Submit")
 
-if st.session_state.get("question_index") == num_questions - 1:
-    submitted = st.button("Submit")
-    if submitted:
-        # Calculate the total score
-        score = calculate_score(st.session_state["selected_questions"], st.session_state["user_answers"])
-        
-        # Display the final score
-        st.success(f"Total Score: {score}")
+    if "next_question" in st.session_state:
+        st.session_state["question_index"] += 1
+        del st.session_state["next_question"]
+
+if submitted:
+    # Calculate the total score
+    score = calculate_score(st.session_state["selected_questions"], st.session_state["user_answers"])
+    
+    # Display the final score
+    st.success(f"Total Score: {score}")
