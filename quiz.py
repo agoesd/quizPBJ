@@ -30,14 +30,14 @@ st.title("Quiz Time!")
 num_questions = st.number_input("Number of questions:", min_value=1, value=5, key="num_questions")
 
 if st.button("Start Quiz"):
+    random_order = list(range(num_questions))
+    random.shuffle(random_order)
+    st.session_state.random_order = random_order
     st.session_state.quiz_started = True
 
 if st.session_state.get("quiz_started"):
     # Load the questions from the CSV file
-    questions = load_questions("https://raw.githubusercontent.com/agoesd/quizPBJ/main/quiz_questions.csv")
-
-    # Randomize the order of questions
-    random.shuffle(questions)
+    questions = load_questions("quiz_questions.csv")
 
     # Initialize the score and user answers
     score = 0
@@ -45,16 +45,17 @@ if st.session_state.get("quiz_started"):
 
     # Display each question and collect the user's answer
     for i in range(num_questions):
+        question_index = st.session_state.random_order[i]
         st.header(f"Question #{i+1}")
-        st.write(questions[i]["question"])
-        selected_option = st.selectbox(f"Select an option for Question #{i+1}:", questions[i]["options"])
+        st.write(questions[question_index]["question"])
+        selected_option = st.selectbox(f"Select an option for Question #{i+1}:", questions[question_index]["options"])
         user_answers.append(selected_option)
 
     # Submit answers and calculate the total score
     submitted = st.button("Submit")
     if submitted:
         # Calculate the total score
-        score = calculate_score(questions[:num_questions], user_answers)
+        score = calculate_score([questions[idx] for idx in st.session_state.random_order[:num_questions]], user_answers)
         
         # Display the final score
         st.success(f"Total Score: {score}")
