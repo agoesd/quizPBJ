@@ -26,10 +26,16 @@ def calculate_score(questions, user_answers):
 # Create a Streamlit app
 st.title("Quiz Time!")
 
+# Initialize the score and user answers
+score = 0
+user_answers = []
+
 # Get the number of questions to load from the user
 num_questions = st.number_input("Number of questions:", min_value=1, value=5, key="num_questions")
 
-if st.button("Start Quiz"):
+submitted_num_questions = st.button("Submit Number of Questions")
+
+if submitted_num_questions:
     random_order = list(range(num_questions))
     random.shuffle(random_order)
     st.session_state["random_order"] = random_order
@@ -37,11 +43,7 @@ if st.button("Start Quiz"):
 
 if st.session_state.get("quiz_started"):
     # Load the questions from the CSV file
-    questions = load_questions("https://raw.githubusercontent.com/agoesd/quizPBJ/main/quiz_questions.csv")
-
-    # Initialize the score and user answers
-    score = 0
-    user_answers = []
+    questions = load_questions("quiz_questions.csv")
 
     # Display each question and collect the user's answer
     for i in range(num_questions):
