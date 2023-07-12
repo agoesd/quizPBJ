@@ -30,7 +30,7 @@ st.title("Quiz Time!")
 num_questions = st.number_input("Number of questions:", min_value=1, value=5)
 
 # Load the questions from the CSV file
-questions = load_questions("quiz_questions.csv")
+questions = load_questions("https://raw.githubusercontent.com/agoesd/quizPBJ/main/quiz_questions.csv")
 
 # Randomize the order of questions
 random.shuffle(questions)
@@ -46,8 +46,11 @@ for i in range(num_questions):
     selected_option = st.selectbox(f"Select an option for Question #{i+1}:", questions[i]["options"])
     user_answers.append(selected_option)
 
-# Calculate the total score
-score = calculate_score(questions[:num_questions], user_answers)
-
-# Display the final score
-st.success(f"Total Score: {score}")
+# Submit answers and calculate the total score
+submitted = st.button("Submit")
+if submitted:
+    # Calculate the total score
+    score = calculate_score(questions[:num_questions], user_answers)
+    
+    # Display the final score
+    st.success(f"Total Score: {score}")
