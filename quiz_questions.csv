@@ -1,9 +1,9 @@
 question;option1;option2;option3;option4;answer
-Soal1;opsi1;opsi2;opsi3;opsi4;opsi1
-Soal2;opsi1;opsi2;opsi3;opsi4;opsi2
-Soal3;opsi1;opsi2;opsi3;opsi4;opsi3
-Soal4;opsi1;opsi2;opsi3;opsi4;opsi4
-Soal5;opsi1;opsi2;opsi3;opsi4;opsi1
-Soal6;opsi1;opsi2;opsi3;opsi4;opsi1
-Soal7;opsi1;opsi2;opsi3;opsi4;opsi2
-Soal8;opsi1;opsi2;opsi3;opsi4;opsi3
+Soal1;Jawaban;opsi2;opsi3;opsi4;opsi1
+Soal2;opsi1;Jawaban;opsi3;opsi4;opsi2
+Soal3;opsi1;opsi2;Jawaban;opsi4;opsi3
+Soal4;opsi1;opsi2;opsi3;Jawaban;opsi4
+Soal5;Jawaban;opsi2;opsi3;opsi4;opsi1
+Soal6;Jawaban;opsi2;opsi3;opsi4;opsi1
+Soal7;opsi1;Jawaban;opsi3;opsi4;opsi2
+Soal8;opsi1;opsi2;Jawaban;opsi4;opsi3
