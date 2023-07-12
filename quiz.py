@@ -69,7 +69,7 @@ if st.session_state.get("quiz_started"):
         st.session_state["question_index"] += 1
         del st.session_state["next_question"]
 
-if submitted:
+if "submitted" in locals() and submitted:
     # Calculate the total score
     score = calculate_score(st.session_state["selected_questions"], st.session_state["user_answers"])
     
