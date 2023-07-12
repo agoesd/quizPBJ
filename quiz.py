@@ -2,14 +2,16 @@ import streamlit as st
 import pandas as pd
 import random
 
-# Load questions from a CSV file
+# Load questions from a CSV file and randomize the options
 def load_questions(url):
     df = pd.read_csv(url, delimiter=";")
     questions = []
     for _, row in df.iterrows():
+        options = [row[i] for i in range(1, 5)]
+        random.shuffle(options)
         question = {
             "question": row[0],
-            "options": [row[i] for i in range(1, 5)],
+            "options": options,
             "answer": row[5]
         }
         questions.append(question)
@@ -26,7 +28,7 @@ def calculate_score(questions, user_answers):
 # Create a Streamlit app
 st.title("Quiz Time!")
 
-# Load the questions from the CSV file
+# Load the questions from the CSV file and randomize the options
 questions = load_questions("quiz_questions.csv")
 
 # Maximum number of questions
