@@ -55,7 +55,6 @@ if st.session_state.get("quiz_started"):
     if st.session_state["question_index"] < num_questions - 1:
         if st.button("Next Question"):
             st.session_state["question_index"] += 1
-            st.session_state["user_answers"][st.session_state["question_index"]] = None
     else:
         submitted = st.button("Submit")
 
