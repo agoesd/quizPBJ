@@ -43,6 +43,7 @@ if submitted_num_questions:
     st.session_state["quiz_started"] = True
     st.session_state["question_index"] = 0
     st.session_state["user_answers"] = [None] * num_questions
+    st.session_state["score"] = 0
 
 if st.session_state.get("quiz_started"):
     question = st.session_state["selected_questions"][st.session_state["question_index"]]
@@ -52,20 +53,15 @@ if st.session_state.get("quiz_started"):
     selected_option = st.radio(f"Select an option for Question #{st.session_state['question_index'] + 1}:", question["options"], key=f"options_{st.session_state['question_index']}")
     st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
 
-    if st.session_state["question_index"] < num_questions - 1:
-        if st.button("Next Question"):
-            st.session_state["question_index"] += 1
-    else:
-        submitted = st.button("Submit")
+    if st.button("Next Question"):
+        st.session_state["question_index"] += 1
+        if st.session_state["question_index"] >= num_questions:
+            st.session_state["quiz_started"] = False
+            st.session_state["score"] = sum(
+                4 if answer == question["answer"] else 0
+                for answer, question in zip(st.session_state["user_answers"], st.session_state["selected_questions"])
+            )
 
-if "submitted" in locals() and submitted:
-    # Calculate the total score
-    total_score = 0
-    for i in range(num_questions):
-        question = st.session_state["selected_questions"][i]
-        user_answer = st.session_state["user_answers"][i]
-        if user_answer == question["answer"]:
-            total_score += 4
-
-    # Display the final score
-    st.success(f"Total Score: {total_score}")
+if not st.session_state.get("quiz_started"):
+    st.write("Quiz ended. Here's your score:")
+    st.success(f"Total Score: {st.session_state['score']}")
