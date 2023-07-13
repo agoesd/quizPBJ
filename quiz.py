@@ -64,4 +64,5 @@ if st.session_state.get("quiz_started"):
 
 if not st.session_state.get("quiz_started"):
     st.write("Quiz ended. Here's your score:")
-    st.success(f"Total Score: {st.session_state['score']}")
+    score = st.session_state.get("score", 0)
+    st.success(f"Total Score: {score}")
