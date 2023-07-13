@@ -55,11 +55,14 @@ if st.session_state.get("quiz_started"):
 
     if st.button("Next Question"):
         st.session_state["question_index"] += 1
+        if st.session_state["question_index"] >= num_questions:
+            st.session_state["quiz_started"] = False
+            st.session_state["score"] = sum(
+                4 if answer == question["answer"] else 0
+                for answer, question in zip(st.session_state.get("user_answers", []), st.session_state.get("selected_questions", []))
+            )
 
 if not st.session_state.get("quiz_started"):
     st.write("Quiz ended. Here's your score:")
-    score = sum(
-        4 if answer == question["answer"] else 0
-        for answer, question in zip(st.session_state["user_answers"], st.session_state["selected_questions"])
-    )
+    score = st.session_state.get("score", 0)
     st.success(f"Total Score: {score}")
