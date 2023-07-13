@@ -52,21 +52,17 @@ if submitted_num_questions:
     st.session_state["quiz_started"] = True
     st.session_state["question_index"] = 0
     st.session_state["user_answers"] = [None] * num_questions
-    st.session_state["next_question_clicked"] = False
 
 if st.session_state.get("quiz_started"):
-    if not st.session_state["next_question_clicked"]:
-        question = st.session_state["selected_questions"][st.session_state["question_index"]]
-        st.header(f"Question #{st.session_state['question_index'] + 1}")
-        st.write(question["question"])
-        selected_option = st.selectbox(f"Select an option for Question #{st.session_state['question_index'] + 1}:", question["options"], key=f"options_{st.session_state['question_index']}")
-        st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
-        st.session_state["next_question_clicked"] = True
+    question = st.session_state["selected_questions"][st.session_state["question_index"]]
+    st.header(f"Question #{st.session_state['question_index'] + 1}")
+    st.write(question["question"])
+    selected_option = st.selectbox(f"Select an option for Question #{st.session_state['question_index'] + 1}:", question["options"], key=f"options_{st.session_state['question_index']}")
+    st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
 
     if st.session_state["question_index"] < num_questions - 1:
-        if st.button("Next Question", key="next_question"):
+        if st.button("Next Question"):
             st.session_state["question_index"] += 1
-            st.session_state["next_question_clicked"] = False
     else:
         submitted = st.button("Submit")
 
