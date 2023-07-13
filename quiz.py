@@ -16,27 +16,18 @@ def load_questions(url):
         questions.append(question)
     return questions
 
-# Randomize the order of questions and options
-def randomize_questions(questions):
-    random.shuffle(questions)
-    for question in questions:
-        random.shuffle(question["options"])
-    return questions
-
-# Calculate the total score
-def calculate_score(questions, user_answers):
-    score = 0
-    for i in range(len(questions)):
-        if user_answers[i] == questions[i]["answer"]:
-            score += 4
-    return score
+# Randomize the order of options for a question
+def randomize_options(question):
+    options = question["options"]
+    random.shuffle(options)
+    question["options"] = options
+    return question
 
 # Create a Streamlit app
 st.title("Quiz Time!")
 
-# Load the questions from the CSV file and randomize the options
+# Load the questions from the CSV file
 questions = load_questions("https://raw.githubusercontent.com/agoesd/quizPBJ/main/quiz_questions.csv")
-questions = randomize_questions(questions)
 
 # Maximum number of questions
 max_num_questions = len(questions)
@@ -55,9 +46,10 @@ if submitted_num_questions:
 
 if st.session_state.get("quiz_started"):
     question = st.session_state["selected_questions"][st.session_state["question_index"]]
+    question = randomize_options(question)
     st.header(f"Question #{st.session_state['question_index'] + 1}")
     st.write(question["question"])
-    selected_option = st.selectbox(f"Select an option for Question #{st.session_state['question_index'] + 1}:", question["options"], key=f"options_{st.session_state['question_index']}")
+    selected_option = st.radio(f"Select an option for Question #{st.session_state['question_index'] + 1}:", question["options"], key=f"options_{st.session_state['question_index']}")
     st.session_state["user_answers"][st.session_state["question_index"]] = selected_option
 
     if st.session_state["question_index"] < num_questions - 1:
@@ -68,7 +60,12 @@ if st.session_state.get("quiz_started"):
 
 if "submitted" in locals() and submitted:
     # Calculate the total score
-    score = calculate_score(st.session_state["selected_questions"], st.session_state["user_answers"])
+    total_score = 0
+    for i in range(num_questions):
+        question = st.session_state["selected_questions"][i]
+        user_answer = st.session_state["user_answers"][i]
+        if user_answer == question["answer"]:
+            total_score += 4
 
     # Display the final score
-    st.success(f"Total Score: {score}")
+    st.success(f"Total Score: {total_score}")
