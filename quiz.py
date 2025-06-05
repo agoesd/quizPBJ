@@ -1,6 +1,7 @@
-import streamlit as st
-import pandas as pd
 import random
+
+import pandas as pd
+import streamlit as st
 
 
 # Load questions from a CSV file
@@ -26,8 +27,20 @@ def randomize_options(question):
     return question
 
 
-# Create a Streamlit app
-st.title("Quiz Time!")
+# Configure and style the Streamlit app
+st.set_page_config(page_title="Quiz Time!", page_icon="🎯", layout="centered")
+st.markdown(
+    """
+    <style>
+        .quiz-title {
+            color: #1f77b4;
+            text-align: center;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+st.markdown("<h1 class='quiz-title'>Quiz Time!</h1>", unsafe_allow_html=True)
 
 # Load the questions from the CSV file
 QUESTIONS_CSV_URL = (
@@ -64,6 +77,8 @@ if st.session_state.get("quiz_started"):
     question = randomize_options(question)
     st.header(f"Question #{st.session_state['question_index'] + 1}")
     st.write(question["question"])
+    progress = (st.session_state["question_index"] / num_questions)
+    st.progress(progress)
     q_idx = st.session_state["question_index"] + 1
     prompt = f"Select an option for Question #{q_idx}:"
     selected_option = st.radio(
@@ -91,3 +106,7 @@ if not st.session_state.get("quiz_started"):
     st.write("Quiz ended. Here's your score:")
     score = st.session_state.get("score", 0)
     st.success(f"Total Score: {score}")
+    if score > (num_questions * 2):
+        st.balloons()
+    if st.button("Restart Quiz"):
+        st.session_state.clear()
